@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { hash } from "bcryptjs";
+import { PrismaUsersRepository } from "@/repositories/prsima-users-repository";
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({
@@ -24,12 +25,12 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     return reply.status(409).send();
   }
 
-  await prisma.user.create({
-    data: {
-      name,
-      email,
-      password_hash,
-    },
+  const prismaUsersRepository = new PrismaUsersRepository();
+
+  await prismaUsersRepository.create({
+    name,
+    email,
+    password_hash,
   });
 
   return reply.status(201).send();
