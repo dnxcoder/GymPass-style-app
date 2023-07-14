@@ -25,7 +25,10 @@ export async function registerController(
     await registerUseCase.execute({ name, email, password });
   } catch (error) {
     if (error instanceof UserAlreadyExistsError) {
-      return reply.status(409).send({message: error.message});
+      return reply.status(409).send({ message: error.message });
+    } else {
+      //if error is unknow
+      throw error;
     }
 
     return reply.status(500).send();
