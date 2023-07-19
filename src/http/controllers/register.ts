@@ -17,8 +17,6 @@ export async function registerController(
   const { name, email, password } = registerBodySchema.parse(request.body);
 
   try {
-    //await RegisterUseCase({ name, email, password });
-
     const usersRepository = new PrismaUsersRepository();
     const registerUseCase = new RegisterUseCase(usersRepository);
 
@@ -30,8 +28,6 @@ export async function registerController(
       //if error is unknow
       throw error;
     }
-
-    return reply.status(500).send();
   }
 
   return reply.status(201).send();

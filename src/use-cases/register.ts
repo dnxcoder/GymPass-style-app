@@ -13,12 +13,6 @@ export class RegisterUseCase {
   constructor(private usersRepository: UsersRepository) {}
 
   async execute({ name, email, password }: RegisterUseCaseRequest) {
-    const registerBodySchema = z.object({
-      name: z.string(),
-      email: z.string().email(),
-      password: z.string().min(6),
-    });
-
     const password_hash = await hash(password, 6);
 
     const userWithSameEmail = await this.usersRepository.findByEmail(email);
