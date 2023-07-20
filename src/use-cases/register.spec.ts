@@ -1,15 +1,20 @@
-import { expect, it, test, describe } from "vitest";
+import { expect, it, test, describe, beforeEach } from "vitest";
 import { RegisterUseCase } from "./register";
 import { compare } from "bcryptjs";
 import InMemoryUsersRepository from "@/repositories/in-memory-users-repository";
 import { UserAlreadyExistsError } from "@/errors/user-already-exists";
 
-describe("Register Use Case", () => {
-  it("it should be able to register new user", async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository();
-    const registerUseCase = new RegisterUseCase(inMemoryUsersRepository);
+let usersRepository: InMemoryUsersRepository;
+let sut: RegisterUseCase;
 
-    const { user } = await registerUseCase.execute({
+describe("Register Use Case", () => {
+  beforeEach(() => {
+    usersRepository = new InMemoryUsersRepository();
+    sut = new RegisterUseCase(usersRepository);
+  });
+
+  it("it should be able to register new user", async () => {
+    const { user } = await sut.execute({
       email: "ichigo@gmail.com",
       name: "ichigo",
       password: "123123",
@@ -24,12 +29,7 @@ describe("Register Use Case", () => {
   });
 
   it("should hash user password up registraton", async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository();
-    const registerUseCase = new RegisterUseCase(inMemoryUsersRepository);
-    //creating a fake registerUseCase
-    //using a fake repository
-
-    const { user } = await registerUseCase.execute({
+    const { user } = await sut.execute({
       email: "dnxcoder@gmail.com",
       name: "Denis",
       password: "123456",
@@ -41,20 +41,17 @@ describe("Register Use Case", () => {
   });
 
   it("it should not allow register with same email twice", async () => {
-    const inMemoryUsersRepository = new InMemoryUsersRepository();
-    const registerUseCase = new RegisterUseCase(inMemoryUsersRepository);
-
-    const email = "dnxcoder@gmail.com";
-
-    const user = await registerUseCase.execute({
-      email,
+    //Creating a new user
+    await sut.execute({
+      email: "dnxcoder@gmail.com",
       name: "Denis",
       password: "123456",
     });
 
+    //Creating another user with same email to test error
     await expect(() =>
-      registerUseCase.execute({
-        email,
+      sut.execute({
+        email: "dnxcoder@gmail.com",
         name: "Denis",
         password: "123456",
       })
