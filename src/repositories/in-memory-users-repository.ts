@@ -1,5 +1,6 @@
 import { Prisma, User } from "@prisma/client";
 import { UsersRepository } from "./users-repository";
+import { GetResult } from "@prisma/client/runtime/library";
 
 class InMemoryUsersRepository implements UsersRepository {
   public items: User[];
@@ -28,6 +29,14 @@ class InMemoryUsersRepository implements UsersRepository {
     };
 
     this.items.push(user);
+
+    return user;
+  }
+
+  async findById(userId: string): Promise<User | null> {
+    const user = this.items.find((user) => user.id === userId);
+
+    if (!user) return null;
 
     return user;
   }
