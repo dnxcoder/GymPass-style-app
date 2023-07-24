@@ -18,11 +18,20 @@ export class CheckInUseCase {
   }
 
   async execute({ gymId, userId }: CheckInUseCaseRequest) {
+    const checkInOnSameDay = await this.checkInsRepository.findByUserIdOnDate(
+      userId,
+      new Date()
+    );
+
+    if (checkInOnSameDay) {
+      throw new Error("You can`t have two check ins in the same day");
+    }
+
     const checkIn = await this.checkInsRepository.create({
       user_id: userId,
       gym_id: gymId,
     });
 
-    return checkIn;
+    return { checkIn };
   }
 }

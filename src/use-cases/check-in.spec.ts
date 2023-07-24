@@ -1,8 +1,7 @@
 import { CheckInsRepository } from "@/repositories/check-ins-repository";
 import { CheckInUseCase } from "./checkin";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-check-ins-repository";
-import { CheckIn } from "@prisma/client";
 import { randomUUID } from "node:crypto";
 
 let checkinsRepository: CheckInsRepository;
@@ -12,16 +11,39 @@ describe("Create Checkin Use Case", () => {
   beforeEach(() => {
     checkinsRepository = new InMemoryCheckInsRepository();
     sut = new CheckInUseCase(checkinsRepository);
+
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("Should be able to create a check in", async () => {
-    const checkin = await sut.execute({
+    const { checkIn } = await sut.execute({
       gymId: randomUUID(),
       userId: randomUUID(),
     });
 
-    if (checkin) {
-      expect(checkin.id).toEqual(expect.any(String));
+    if (checkIn) {
+      console.log(checkIn?.created_at);
+      expect(checkIn.id).toEqual(expect.any(String));
     }
+  });
+
+  it("Should not be able to check in twice in the same day", async () => {
+    vi.setSystemTime(new Date(2022, 0, 20, 8, 0, 0));
+
+    await sut.execute({
+      gymId: "gym-01",
+      userId: "user-01",
+    });
+
+    await expect(() =>
+      sut.execute({
+        gymId: "gym-01",
+        userId: "user-01",
+      })
+    ).rejects.toBeInstanceOf(Error);
   });
 });
