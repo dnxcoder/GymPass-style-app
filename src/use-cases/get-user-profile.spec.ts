@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { makeGetUserProfileUseCase } from "./factories/make-get-user-profile-use-case";
 import { GetUserProfileUseCase } from "./get-user-profile";
 import { UsersRepository } from "@/repositories/users-repository";
-import InMemoryUsersRepository from "@/repositories/in-memory-users-repository";
-import { RegisterUseCase } from "./register";
+import { InMemoryUsersRepository } from "@/repositories/in-memory-users-repository";
 import { hash } from "bcryptjs";
 import { ResourceNotFound } from "@/errors/resoucer-not-found-error";
 
