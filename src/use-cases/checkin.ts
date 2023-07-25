@@ -1,6 +1,7 @@
 import { ResourceNotFound } from "@/errors/resoucer-not-found-error";
 import { CheckInsRepository } from "@/repositories/check-ins-repository";
 import { GymsRepository } from "@/repositories/gyms-repository";
+import { getDistanceBetweenCoordinates } from "@/utils/get-distance-between-coordinates";
 import { CheckIn } from "@prisma/client";
 
 interface CheckInUseCaseRequest {
@@ -44,6 +45,19 @@ export class CheckInUseCase {
     }
 
     // calculate distance between user and gym
+
+    const distance = getDistanceBetweenCoordinates(
+      { latitude: userLatitude, longitude: userLongitude },
+      { latitude: Number(gym.latitude), longitude: Number(gym.longitude) }
+    );
+
+    //if distance greater than 100 meters throw error
+
+    const MAX_DISTANCE_IN_KM = 0.1;
+
+    if (distance > MAX_DISTANCE_IN_KM) {
+      throw new Error("Distance between user and gym is too far");
+    }
 
     if (checkInOnSameDay) {
       throw new Error("You can`t have two check ins in the same day");
