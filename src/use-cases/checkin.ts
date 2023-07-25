@@ -1,3 +1,5 @@
+import { MaxDistanceError } from "@/errors/max-distance-error";
+import { MaxNumberOfCheckInsError } from "@/errors/max-number-of-check-ins-error";
 import { ResourceNotFound } from "@/errors/resoucer-not-found-error";
 import { CheckInsRepository } from "@/repositories/check-ins-repository";
 import { GymsRepository } from "@/repositories/gyms-repository";
@@ -56,11 +58,11 @@ export class CheckInUseCase {
     const MAX_DISTANCE_IN_KM = 0.1;
 
     if (distance > MAX_DISTANCE_IN_KM) {
-      throw new Error("Distance between user and gym is too far");
+      throw new MaxDistanceError();
     }
 
     if (checkInOnSameDay) {
-      throw new Error("You can`t have two check ins in the same day");
+      throw new MaxNumberOfCheckInsError();
     }
 
     const checkIn = await this.checkInsRepository.create({

@@ -1,29 +1,32 @@
-import { Gym } from "@prisma/client";
+import { Gym, Prisma } from "@prisma/client";
 import { GymsRepository } from "../gyms-repository";
+import { randomUUID } from "crypto";
 
 export class InMemoryGymsRepository implements GymsRepository {
-  private items: Gym[];
+  private items: Prisma.GymCreateInput[];
 
   constructor() {
     this.items = [];
   }
 
-  async findById(id: string): Promise<Gym | null> {
+  async findById(id: string): Promise<Prisma.GymCreateInput | null> {
     const foundGym = this.items.find((item) => item.id === id);
 
     return foundGym ? foundGym : null;
   }
 
-  async create(data: Gym): Promise<Gym | null> {
-    this.items.push({
-      id: data.id,
+  async create(data: Prisma.GymCreateInput): Promise<Prisma.GymCreateInput> {
+    const gym = {
+      id: data.id ? data.id : randomUUID(),
       title: data.title,
       phone: data.phone,
       description: data.description,
       latitude: data.latitude,
       longitude: data.longitude,
-    });
+    };
 
-    return null;
+    this.items.push(gym);
+
+    return gym;
   }
 }

@@ -5,6 +5,8 @@ import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-c
 import { GymsRepository } from "@/repositories/gyms-repository";
 import { InMemoryGymsRepository } from "@/repositories/in-memory/in-memory-gyms-repository";
 import { Decimal } from "@prisma/client/runtime/library";
+import { MaxNumberOfCheckInsError } from "@/errors/max-number-of-check-ins-error";
+import { MaxDistanceError } from "@/errors/max-distance-error";
 
 let checkinsRepository: CheckInsRepository;
 let gymsRepository: GymsRepository;
@@ -60,10 +62,10 @@ describe("Create Checkin Use Case", () => {
       sut.execute({
         gymId: "gym-01",
         userId: "user-01",
-        userLatitude: 0,
-        userLongitude: 0,
+        userLatitude: 38.6579838,
+        userLongitude: -90.3319484,
       })
-    ).rejects.toBeInstanceOf(Error);
+    ).rejects.toBeInstanceOf(MaxNumberOfCheckInsError);
   });
 
   it("should be able to checkin in different days", async () => {
@@ -106,6 +108,6 @@ describe("Create Checkin Use Case", () => {
         userLatitude: 38.6588484,
         userLongitude: -90.3209908,
       })
-    ).rejects.toBeInstanceOf(Error);
+    ).rejects.toBeInstanceOf(MaxDistanceError);
   });
 });
