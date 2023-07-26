@@ -57,6 +57,8 @@ export class CheckInUseCase {
 
     const MAX_DISTANCE_IN_KM = 0.1;
 
+    console.log(distance + "<-------------------------");
+
     if (distance > MAX_DISTANCE_IN_KM) {
       throw new MaxDistanceError();
     }

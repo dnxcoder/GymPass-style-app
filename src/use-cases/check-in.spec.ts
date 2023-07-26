@@ -25,8 +25,8 @@ describe("Create Checkin Use Case", () => {
       title: "Gym da rapaziada",
       description: "Rapazes",
       phone: "231224",
-      latitude: new Decimal(38.6579838),
-      longitude: new Decimal(-90.3319484),
+      latitude: 38.6579838,
+      longitude: -90.3319484,
     });
   });
 
