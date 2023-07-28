@@ -3,9 +3,10 @@ import { CheckInsRepository } from "../check-ins-repository";
 import { randomUUID } from "node:crypto";
 import { GetResult } from "@prisma/client/runtime/library";
 import dayjs from "dayjs";
+import { ResourceNotFound } from "@/errors/resoucer-not-found-error";
 
 export class InMemoryCheckInsRepository implements CheckInsRepository {
-  private items: CheckIn[];
+  public items: CheckIn[];
 
   constructor() {
     this.items = [];
@@ -15,7 +16,7 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
     gym_id,
     user_id,
     validated_at,
-  }: Prisma.CheckInUncheckedCreateInput): Promise<CheckIn | null> {
+  }: Prisma.CheckInUncheckedCreateInput): Promise<CheckIn> {
     const checkIn: CheckIn = {
       id: randomUUID(),
       created_at: new Date(),
@@ -60,5 +61,23 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
     });
 
     return checkInOnSameDate ? checkInOnSameDate : null;
+  }
+
+  public async findById(id: string): Promise<CheckIn | null> {
+    const checkIn = this.items.find((item) => item.id === id);
+
+    if (!checkIn) return null;
+
+    return checkIn;
+  }
+
+  public async save(checkIn: CheckIn): Promise<CheckIn> {
+    const checkInIndex = this.items.findIndex((item) => item.id === checkIn.id);
+
+    if (checkInIndex) {
+      this.items[checkInIndex] = checkIn;
+    }
+
+    return checkIn;
   }
 }
