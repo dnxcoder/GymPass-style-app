@@ -13,12 +13,13 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
   }
 
   public async create({
+    id,
     gym_id,
     user_id,
     validated_at,
   }: Prisma.CheckInUncheckedCreateInput): Promise<CheckIn> {
     const checkIn: CheckIn = {
-      id: randomUUID(),
+      id: id ?? randomUUID(),
       created_at: new Date(),
       validated_at: validated_at ? new Date(validated_at) : null,
       gym_id,
