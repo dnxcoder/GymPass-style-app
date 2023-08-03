@@ -6,7 +6,7 @@ export async function nearbyGymController(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const nearbyGymBodySchema = z.object({
+  const nearbyGymQuerySchema = z.object({
     latitude: z.number().refine((value) => {
       return Math.abs(value) <= 90;
     }),
@@ -15,7 +15,7 @@ export async function nearbyGymController(
     }),
   });
 
-  const { latitude, longitude } = nearbyGymBodySchema.parse(request.body);
+  const { latitude, longitude } = nearbyGymQuerySchema.parse(request.params);
 
   try {
     const createGymUseCase = makeFetchNearbyGymsUseCase();
